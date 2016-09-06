@@ -15,7 +15,7 @@ subject_test_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR D
 subject_train_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/train/subject_train.txt"
 
 
-#read in all files as character
+#read in all files
 trainX<- fread(train_file, header=FALSE)
 testX<-fread(test_file, header = FALSE)
 trainy<- fread(ytrain_file, header=FALSE)
@@ -25,8 +25,7 @@ subj_train <- fread(subject_train_file, header = FALSE,colClasses = 'character',
 subj_test<- fread(subject_test_file, header = FALSE,colClasses = 'character', stringsAsFactors = TRUE)
 headers<-fread(h_file)
 
-#combine test and training file
-#combX <-rbind(testX, trainX)
+#manipulate files by adding headers and doing a first level combine on test and train
 headers<-rbind(headers, list(562, "activityLabels"))
 headers<-rbind(headers, list(563, "subjectLabels"))
 

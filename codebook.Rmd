@@ -25,7 +25,7 @@ The enviroment requires the installation and proper functioning of the dplyr and
 Data has been downloaded and is stored on my local drive. The download and unzipping process is not detailed here.
 The files are:
 ##Data files, decimal data type
-*X_test.txt
+*X_test.txt 
 *X_train.txt 
 
 ##Header labels for data files
@@ -56,10 +56,12 @@ subject_test_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR D
 subject_train_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/train/subject_train.txt"
 ```
 They fit together as follows:
-![](http://example.com/logo.png)
+![](https://github.com/beverand/ProgrammingAssignment-TidyData/blob/master/Drawing1.jpg)
 
-
-#read in all files as character
+The files are read in without headers because they are separate. Subject (*subj_train*/*subj_test*), activity (*activities*) and the *headers* are read in as character.
+Data (*trainX*,*testX*,*trainy*,*testy*) is read in a numeric as R defaults to when it knows the type.
+```{r, echo=FALSE}
+#read in all files
 trainX<- fread(train_file, header=FALSE)
 testX<-fread(test_file, header = FALSE)
 trainy<- fread(ytrain_file, header=FALSE)
@@ -68,20 +70,36 @@ activities <-fread(activity_lbl,header=FALSE, stringsAsFactors = TRUE)
 subj_train <- fread(subject_train_file, header = FALSE,colClasses = 'character', stringsAsFactors = TRUE)
 subj_test<- fread(subject_test_file, header = FALSE,colClasses = 'character', stringsAsFactors = TRUE)
 headers<-fread(h_file)
+```
 
+
+The header file is manipulated to add the activity and subject labels to the set of labels from features.txt
+```{r, echo=FALSE}
 #combine test and training file
-#combX <-rbind(testX, trainX)
 headers<-rbind(headers, list(562, "activityLabels"))
 headers<-rbind(headers, list(563, "subjectLabels"))
+```
 
+The activity and subject labels are added to the columns for those respective fields so that errors related to two columns having the same name (V1) can be avoided.
+The activity label is the same for the activity number from the activity data in the test/train_y files and the numeric key in the activity labels file. This will allow for them to be joined later on.
+```{r, echo=FALSE}
 colnames(testy)<- "activityLabels"
 colnames(trainy)<- "activityLabels"
 colnames(activities)<-c("activityLabels", "activity")
 colnames(subj_test)<- "subjectLabels"
 colnames(subj_train)<- "subjectLabels"
+```
+
+
+The data can now be bound together for each set without error, because of the labeling done above.
+```{r, echo=FALSE}
 testX <-cbind(testX, testy, subj_test)
 trainX <-cbind(trainX, trainy, subj_train)
+```
 
+
+To get all of the mean and standard devation columns, the grepl function is used to search the headers for the words mean, std or Labels. arr.ind = TRUE gives us just the indexes. Thus, *selectedCols* is a vector of numbers. The data is also put into a list with the all of the actual character name values, this is stored in *h* and will be used to label our columns on the final dataset. *h* is then further modified to be limited to just the selected columns
+```{r, echo=FALSE}
 #get indexes for all mean and standard devation columns
 selectedCols <-which(headers[, grepl("mean|std|Labels", headers$V2)], arr.ind = TRUE)
 
@@ -90,23 +108,34 @@ h<-unlist(select(headers, V2), use.names = FALSE)
 
 #use find the mean, standard devation and label columns then assign them as colname 
 h<-subset(h, h %in% grep("mean|std|Labels", h, value = TRUE))
+```
 
+The test and train data sets are combined here into the variable *combined*.
+```{r, echo=FALSE}
 #combine test and training sets
 combined<-rbind(testX,trainX)
+```
 
-
+The selected columns are then put into the *selectedData* variable and then *h* is put into the column names.
+*selectedData_final* has the activity labels merged into it from the activities variable (this data is 1 WALKING, for example).The actual numeric factor column is no longer necessary, so it is removed from this cut of the data.
+```{r, echo=FALSE}
 #select those columns from the combined data set
 selectedData<-select(combined, selectedCols)
 colnames(selectedData) <- h
-#merge(selectedData, activities)
-
 
 selectedData_final <- merge(selectedData, activities, by.x="activityLabels", by.y="activityLabels")
+
 #remove the activity labels numeric column 
 selectedData_final[,activityLabels:=NULL]
+```
 
+
+Finally the tidy dataset is returned in *out_final* which consists of the mean for each subject by activity with the nulls removed.
+```{r, echo=FALSE}
 #final summary
 out_final <-selectedData_final[, lapply(.SD, mean, na.rm=TRUE), by=c('subjectLabels',"activity") ]
+```
+
 The following fields have been taken from the original set of 561 availible fields and are summarized in the final tidy data output.
 
 All fields are decimal fields except for the activity and subjectLabels fields. Those two are character and numeric factors respectively.
@@ -152,28 +181,3 @@ All fields are decimal fields except for the activity and subjectLabels fields. 
 [77] "fBodyBodyGyroMag-std()"          "fBodyBodyGyroMag-meanFreq()"    
 [79] "fBodyBodyGyroJerkMag-mean()"     "fBodyBodyGyroJerkMag-std()"     
 [81] "fBodyBodyGyroJerkMag-meanFreq()"
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
