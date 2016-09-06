@@ -2,16 +2,16 @@
 #install.packages("dplyr")
 
 #Data has been downloaded and is stored on local drive in folders named
-test_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/test/X_test.txt"
-train_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/train/X_train.txt"
-h_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/features.txt"
-activity_lbl <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/activity_labels.txt"
+test_file <- "UCI HAR Dataset/test/X_test.txt"
+train_file <- "UCI HAR Dataset/train/X_train.txt"
+h_file <- "UCI HAR Dataset/features.txt"
+activity_lbl <- "UCI HAR Dataset/activity_labels.txt"
 
 
-ytest_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/test/y_test.txt"
-ytrain_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/train/y_train.txt"
+ytest_file <- "UCI HAR Dataset/test/y_test.txt"
+ytrain_file <- "UCI HAR Dataset/train/y_train.txt"
 
-subject_test_file <- "C:/Users/bever/Documents/R/Rscripts/CleaningData/UCI HAR Dataset/test/subject_test.txt"
+subject_test_file <- "UCI HAR Dataset/test/subject_test.txt"
 subject_train_file <- "UCI HAR Dataset/train/subject_train.txt"
 
 
